@@ -1,0 +1,10 @@
+[Icon Theme]
+Name=SplashOS Theme
+Comment=The official icon theme for SplashOS
+Inherits=MoreWaita,Adwaita
+Directories=applications/128
+
+[applications/128]
+Size=128
+Context=Applications
+Type=Fixed
