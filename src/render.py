@@ -29,6 +29,19 @@ def render_icon(blend_file, output_dir, size):
     bpy.context.scene.render.resolution_x = size
     bpy.context.scene.render.resolution_y = size
 
+    # Ensure 100% resolution percentage
+    bpy.context.scene.render.resolution_percentage = 100
+
+    # Disable file format conversion
+    bpy.context.scene.render.use_file_extension = True
+
+    # Set scale to 1
+    bpy.context.scene.unit_settings.scale_length = 1
+
+    # Ensure proper pixel aspect ratio
+    bpy.context.scene.render.pixel_aspect_x = 1
+    bpy.context.scene.render.pixel_aspect_y = 1
+
     # Get filename without extension
     icon_name = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
 
@@ -40,16 +53,26 @@ def render_icon(blend_file, output_dir, size):
     output_path = os.path.join(size_dir, f"{icon_name}.png")
     bpy.context.scene.render.filepath = output_path
 
-    # Set render format to PNG
+    # Set render format to PNG with maximum quality
     bpy.context.scene.render.image_settings.file_format = 'PNG'
+    bpy.context.scene.render.image_settings.color_mode = 'RGBA'
+    bpy.context.scene.render.image_settings.compression = 0
 
     # Render
     bpy.ops.render.render(write_still=True)
+
+    # Verify output size
+    if os.path.exists(output_path):
+        from PIL import Image
+        with Image.open(output_path) as img:
+            actual_size = img.size
+            if actual_size != (size, size):
+                print(f"Warning: Expected size {size}x{size} but got {actual_size[0]}x{actual_size[1]}")
+
     print(f"Rendered {icon_name}.png at {size}x{size}")
 
 def main():
     # Get output directory from command line arguments
-    # In Blender, args after -- are at position 5 onwards
     output_dir = sys.argv[sys.argv.index("--") + 1]
 
     if not load_environment():
