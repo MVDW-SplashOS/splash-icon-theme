@@ -1,14 +1,16 @@
 import bpy
 import os
-from dotenv import load_dotenv
 import sys
 
-def load_environment():
-    env_file = ".env"
-    if os.path.exists(env_file):
-        load_dotenv(env_file)
-        return True
-    return False
+# Get the output path from command line arguments
+output_path = sys.argv[sys.argv.index("--") + 1]
+
+# The rest of the environment variables will follow
+env_vars = sys.argv[sys.argv.index("--") + 2:]
+for var in env_vars:
+    if "=" in var:
+        key, value = var.split("=", 1)
+        os.environ[key] = value
 
 def get_render_sizes():
     sizes = []
@@ -74,10 +76,6 @@ def render_icon(blend_file, output_dir, size):
 def main():
     # Get output directory from command line arguments
     output_dir = sys.argv[sys.argv.index("--") + 1]
-
-    if not load_environment():
-        print("Error: .env file not found")
-        sys.exit(1)
 
     # Get render sizes from environment
     sizes = get_render_sizes()

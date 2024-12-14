@@ -56,7 +56,15 @@ Get-ChildItem -Path "src/blend/applications" -Filter "*.blend" -Recurse | ForEac
     $renderPath = (Join-Path $PSScriptRoot "src/render.py") -replace '\\','/'
     $outputPath = (Join-Path $THEME_DIR "applications") -replace '\\','/'
 
-    blender --python-use-system-env -b "$blendPath" -P "$renderPath" -- "$outputPath"
+    # Pass environment variables directly to the render script
+    $envVars = ""
+    Get-ChildItem env: | Where-Object { $_.Name -like "sit_*" } | ForEach-Object {
+        $envVars += "$($_.Name)=$($_.Value) "
+    }
+
+    # Use the environment variables directly in the Blender command
+    $blenderCmd = "blender --python-use-system-env -b `"$blendPath`" -P `"$renderPath`" -- `"$outputPath`" $envVars"
+    Invoke-Expression $blenderCmd
 }
 
 Write-Host "Icon theme build complete!"
