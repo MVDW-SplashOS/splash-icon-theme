@@ -56,7 +56,7 @@ Get-ChildItem -Path "src/blend/applications" -Filter "*.blend" -Recurse | ForEac
     $renderPath = (Join-Path $PSScriptRoot "src/render.py") -replace '\\','/'
     $outputPath = (Join-Path $THEME_DIR "applications") -replace '\\','/'
 
-    blender -b "$blendPath" -P "$renderPath" -- "$outputPath"
+    blender --python-use-system-env -b "$blendPath" -P "$renderPath" -- "$outputPath"
 }
 
 Write-Host "Icon theme build complete!"
